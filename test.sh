@@ -18,12 +18,12 @@ make_request() {
     local method=$1
     local endpoint=$2
     local data=$3
-    
+
     echo "Request: $method $endpoint"
     if [ -n "$data" ]; then
         echo "Data: $data"
     fi
-    
+
     if [ "$method" = "GET" ]; then
         curl -s -X $method "$endpoint" | jq .
     else
@@ -49,7 +49,7 @@ test_create_user() {
     read -p "Enter first name: " firstName
     read -p "Enter last name: " lastName
     read -p "Enter email: " email
-    
+
     local user_data=$(cat <<EOF
 {
     "firstName": "$firstName",
@@ -67,15 +67,15 @@ test_update_user() {
     read -p "Enter new first name (press Enter to keep current): " firstName
     read -p "Enter new last name (press Enter to keep current): " lastName
     read -p "Enter new email (press Enter to keep current): " email
-    
+
     local update_data="{"
     local has_data=false
-    
+
     if [ -n "$firstName" ]; then
         update_data+="\"firstName\": \"$firstName\""
         has_data=true
     fi
-    
+
     if [ -n "$lastName" ]; then
         if [ "$has_data" = true ]; then
             update_data+=","
@@ -83,7 +83,7 @@ test_update_user() {
         update_data+="\"lastName\": \"$lastName\""
         has_data=true
     fi
-    
+
     if [ -n "$email" ]; then
         if [ "$has_data" = true ]; then
             update_data+=","
@@ -91,9 +91,9 @@ test_update_user() {
         update_data+="\"email\": \"$email\""
         has_data=true
     fi
-    
+
     update_data+="}"
-    
+
     make_request "PUT" "$USERS_URL/$user_id" "$update_data"
 }
 
@@ -146,4 +146,4 @@ while true; do
         2) echo "Exiting..."; exit 0 ;;
         *) echo "Invalid choice. Please try again." ;;
     esac
-done 
+done

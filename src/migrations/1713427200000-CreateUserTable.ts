@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateUserTable1713427200000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -34,21 +34,31 @@ export class CreateUserTable1713427200000 implements MigrationInterface {
           },
           {
             name: 'createdAt',
-            type: 'datetime',
+            type: 'timestamp',
             default: 'CURRENT_TIMESTAMP',
           },
           {
             name: 'updatedAt',
-            type: 'datetime',
+            type: 'timestamp',
             default: 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
           },
         ],
       }),
       true
     );
+
+    await queryRunner.createIndex(
+      'users',
+      new TableIndex({
+        name: 'IDX_USER_EMAIL',
+        columnNames: ['email'],
+      })
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('users', 'IDX_USER_EMAIL');
     await queryRunner.dropTable('users');
   }
 }
