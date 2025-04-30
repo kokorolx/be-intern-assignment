@@ -11,7 +11,7 @@ export const createUserSchema = Joi.object({
     'string.min': 'Last name must be at least 2 characters',
     'string.max': 'Last name must not exceed 255 characters',
   }),
-  email: Joi.string().required().lowercase().email().domain().max(255).messages({
+  email: Joi.string().required().lowercase().email().max(255).messages({
     'string.empty': 'Please provide email address',
     'string.email': 'Please provide a valid email address',
     'string.max': 'Email must not exceed 255 characters',
@@ -27,7 +27,7 @@ export const updateUserSchema = Joi.object({
     'string.min': 'Last name must be at least 2 characters',
     'string.max': 'Last name must not exceed 255 characters',
   }),
-  email: Joi.string().lowercase().email().domain().max(255).messages({
+  email: Joi.string().lowercase().email().max(255).messages({
     'string.email': 'Please provide a valid email address',
     'string.max': 'Email must not exceed 255 characters',
   }),

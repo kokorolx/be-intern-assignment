@@ -36,7 +36,7 @@ export class ActivityController {
       }
 
       const options: GetActivityOptions = {
-        type: req.query.type as string | undefined,
+        type: req.query.type as 'post' | 'like' | 'follow' | undefined,
         startDate: req.query.startDate ? new Date(req.query.startDate as string) : undefined,
         endDate: req.query.endDate ? new Date(req.query.endDate as string) : undefined,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
