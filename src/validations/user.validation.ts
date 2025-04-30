@@ -46,3 +46,57 @@ export const userIdParamsSchema = Joi.object({
     'any.required': 'Please provide user ID',
   }),
 }).strict();
+
+export const getUserFollowersSchema = Joi.object({
+  params: userIdParamsSchema,
+  query: Joi.object({
+    limit: Joi.number().integer().min(1).max(100).optional()
+      .messages({
+        'number.base': 'Limit must be a number',
+        'number.integer': 'Limit must be an integer',
+        'number.min': 'Limit must be at least 1',
+        'number.max': 'Limit cannot exceed 100',
+      }),
+    offset: Joi.number().integer().min(0).optional()
+      .messages({
+        'number.base': 'Offset must be a number',
+        'number.integer': 'Offset must be an integer',
+        'number.min': 'Offset must be non-negative',
+      }),
+  }).strict(),
+}).strict();
+
+export const getUserActivitySchema = Joi.object({
+  params: userIdParamsSchema,
+  query: Joi.object({
+    type: Joi.string().valid('post', 'like', 'follow').optional()
+      .messages({
+        'string.base': 'Activity type must be a string',
+        'any.only': 'Activity type must be one of: post, like, follow',
+      }),
+    startDate: Joi.date().iso().optional()
+      .messages({
+        'date.base': 'Start date must be a valid date',
+        'date.format': 'Start date must be in ISO format',
+      }),
+    endDate: Joi.date().iso().min(Joi.ref('startDate')).optional()
+      .messages({
+        'date.base': 'End date must be a valid date',
+        'date.format': 'End date must be in ISO format',
+        'date.min': 'End date must be greater than or equal to start date',
+      }),
+    limit: Joi.number().integer().min(1).max(100).optional().default(10)
+      .messages({
+        'number.base': 'Limit must be a number',
+        'number.integer': 'Limit must be an integer',
+        'number.min': 'Limit must be at least 1',
+        'number.max': 'Limit cannot exceed 100',
+      }),
+    offset: Joi.number().integer().min(0).optional().default(0)
+      .messages({
+        'number.base': 'Offset must be a number',
+        'number.integer': 'Offset must be an integer',
+        'number.min': 'Offset must be non-negative',
+      }),
+  }).strict(),
+}).strict();

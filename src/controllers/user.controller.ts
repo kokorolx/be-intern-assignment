@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import { UserService, CreateUserDto, UpdateUserDto } from '../services/user.service';
+import { FollowService, GetFollowsOptions } from '../services/follow.service';
 
 export class UserController {
   private userService: UserService;
 
+  private followService: FollowService;
+
   constructor() {
     this.userService = new UserService();
+    this.followService = new FollowService();
   }
 
   /**
@@ -208,6 +212,52 @@ export class UserController {
       res.status(500).json({
         success: false,
         message: 'An unexpected error occurred while deleting user'
+      });
+    }
+  }
+
+  /**
+   * Get a user's followers with pagination
+   * @route GET /api/users/:id/followers
+   * @param req Express request object with parameters and query:
+   *    - id (number): User ID whose followers to fetch
+   *    - limit (number, optional): Number of followers per page (default: 10)
+   *    - offset (number, optional): Number of followers to skip (default: 0)
+   * @param res Express response object
+   * @returns {Promise<void>} JSON response with:
+   *    - followers: Array of user objects
+   *    - totalCount: Total number of followers
+   * @throws {400} Invalid user ID format or pagination parameters
+   * @throws {500} Server error while fetching followers
+   */
+  async getUserFollowers(req: Request, res: Response) {
+    try {
+      const userId = parseInt(req.params.id, 10);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID format'
+        });
+      }
+
+      const options: GetFollowsOptions = {
+        limit: req.query.limit ? parseInt(req.query.limit as string, 10) : undefined,
+        offset: req.query.offset ? parseInt(req.query.offset as string, 10) : undefined,
+      };
+
+      const { followers, totalCount } = await this.followService.getFollowers(userId, options);
+      res.json({
+        success: true,
+        data: followers,
+        metadata: {
+          totalCount
+        }
+      });
+    } catch (error) {
+      console.error('Error in getUserFollowers:', error);
+      res.status(500).json({
+        success: false,
+        message: 'An unexpected error occurred while fetching user followers'
       });
     }
   }

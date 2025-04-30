@@ -1,11 +1,19 @@
 import { Router, Request, Response, NextFunction, RequestHandler } from 'express';
 import rateLimit from 'express-rate-limit';
 import { validate } from '../middleware/validation.middleware';
-import { createUserSchema, updateUserSchema, userIdParamsSchema } from '../validations/user.validation';
+import {
+  createUserSchema,
+  updateUserSchema,
+  userIdParamsSchema,
+  getUserFollowersSchema,
+  getUserActivitySchema
+} from '../validations/user.validation';
 import { UserController } from '../controllers/user.controller';
+import { ActivityController } from '../controllers/activity.controller';
 
 export const userRouter = Router();
 const userController = new UserController();
+const activityController = new ActivityController();
 
 // Rate limiting middleware
 const limiter = rateLimit({
@@ -43,6 +51,13 @@ userRouter.post('/',
   asyncHandler((req, res) => userController.createUser(req, res))
 );
 
+// Get user activity history
+// Responses: 200 (OK), 400 (Invalid ID/Validation Error), 429 (Too Many Requests), 500 (Error)
+userRouter.get('/:id/activity',
+  validate(getUserActivitySchema) as RequestHandler,
+  asyncHandler((req, res) => activityController.getUserActivity(req, res))
+);
+
 // Update user
 // Responses: 200 (OK), 400 (Invalid ID/Validation Error), 404 (Not Found), 409 (Email Already Exists), 429 (Too Many Requests), 500 (Error)
 userRouter.put('/:id',
@@ -56,4 +71,11 @@ userRouter.put('/:id',
 userRouter.delete('/:id',
   validate(userIdParamsSchema, 'params') as RequestHandler,
   asyncHandler((req, res) => userController.deleteUser(req, res))
+);
+
+// Get user followers
+// Responses: 200 (OK), 400 (Invalid ID/Validation Error), 429 (Too Many Requests), 500 (Error)
+userRouter.get('/:id/followers',
+  validate(getUserFollowersSchema) as RequestHandler,
+  asyncHandler((req, res) => userController.getUserFollowers(req, res))
 );

@@ -3,6 +3,10 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import { userRouter } from './routes/user.routes';
+import { postRouter } from './routes/post.routes';
+import { likeRouter } from './routes/like.routes';
+import { followRouter } from './routes/follow.routes';
+import { feedRouter } from './routes/feed.routes';
 
 const app = express();
 
@@ -19,6 +23,10 @@ app.get('/', (req: Request, res: Response) => {
 
 // Register routes
 app.use('/api/users', userRouter);
+app.use('/api/posts', postRouter);
+app.use('/api/likes', likeRouter);
+app.use('/api/follows', followRouter);
+app.use('/api/feed', feedRouter);
 
 // Global error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
